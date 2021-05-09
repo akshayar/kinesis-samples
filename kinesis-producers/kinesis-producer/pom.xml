@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.aksh</groupId>
 	<version>1.0.0</version>
-	<artifactId>kinesis-producer-api</artifactId>
+	<artifactId>kinesis-producer</artifactId>
 	<build>
 		<plugins>
 		   <plugin>
@@ -22,7 +22,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<mainClass>com.aksh.kcl.enh.consumer.KclEnhFanoutApplicationSample</mainClass>
+					<mainClass>com.aksh.kinesis.producer.KinesisProducerMain</mainClass>
 				</configuration>
 				<executions>
 					<execution>
@@ -86,6 +86,11 @@
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>kinesis</artifactId>
 			<version>2.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.kinesis</groupId>
+			<artifactId>amazon-kinesis-client</artifactId>
+			<version>2.1.0</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -5,7 +5,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/kcl-enhanced-consumer",
+          "awslogs-group": "/ecs/kinesis-producer",
           "awslogs-region": "ap-south-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -15,15 +15,15 @@
       "environment": [],
       "mountPoints": [],
       "volumesFrom": [],
-      "image": "799223504601.dkr.ecr.ap-south-1.amazonaws.com/kinesis-consumers/kcl-enhanced-consumer:latest",
+      "image": "799223504601.dkr.ecr.ap-south-1.amazonaws.com/kinesis-consumers/kinesis-producer:latest",
       "essential": true,
-      "name": "kcl-consmer"
+      "name": "kinesis-producer"
     }
   ],
   "placementConstraints": [],
   "memory": "1024",
   "taskRoleArn": "arn:aws:iam::799223504601:role/kcl-consumer-ecs",
-  "family": "kcl-enhanced-consumer",
+  "family": "kinesis-producer",
   
   "requiresCompatibilities": [
     "FARGATE"

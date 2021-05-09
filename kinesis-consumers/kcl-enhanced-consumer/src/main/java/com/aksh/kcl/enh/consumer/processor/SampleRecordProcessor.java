@@ -46,7 +46,7 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 	public void processRecords(ProcessRecordsInput processRecordsInput) {
 		MDC.put(SHARD_ID_MDC_KEY, shardId);
 		try {
-			log.info("Processing {} record(s)", processRecordsInput.records().size());
+			log.debug("Processing {} record(s)", processRecordsInput.records().size());
 			processRecordsInput.records().forEach(this::processSingleRecord);
 		} catch (Throwable t) {
 			log.error("Caught throwable while processing records. Aborting.");
@@ -63,7 +63,7 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
      */
     private void processSingleRecord(KinesisClientRecord record) {
         // TODO Add your own record processing logic here
-    	log.info("Processing record pk: {} -- Seq: {}", record.partitionKey(), record.sequenceNumber());
+    	log.debug("Processing record pk: {} -- Seq: {}", record.partitionKey(), record.sequenceNumber());
 
         String data = null;
         try {

@@ -5,7 +5,6 @@ package com.aksh.kinesis.producer;
 
 import java.util.Arrays;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,12 +20,9 @@ import software.amazon.awssdk.regions.Region;
 @SpringBootApplication
 public  class KinesisProducerMain {
 	
+	
 	@Value("${region:us-east-1}")
 	private String regionString;
-	
-	@Autowired
-	private Region region;
-	
 	
 	public static void main(String[] args) {
 		SpringApplication.run(KinesisProducerMain.class, args);

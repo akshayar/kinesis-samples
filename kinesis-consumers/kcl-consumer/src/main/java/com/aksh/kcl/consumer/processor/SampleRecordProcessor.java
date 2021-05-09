@@ -53,7 +53,7 @@ public class SampleRecordProcessor implements IRecordProcessor {
      */
     @Override
     public void processRecords(List<Record> records, IRecordProcessorCheckpointer checkpointer) {
-        log.info("Processing " + records.size() + " records from " + kinesisShardId);
+        log.debug("Processing " + records.size() + " records from " + kinesisShardId);
 
         // Process records and perform all exception handling.
         processRecordsWithRetries(records);
