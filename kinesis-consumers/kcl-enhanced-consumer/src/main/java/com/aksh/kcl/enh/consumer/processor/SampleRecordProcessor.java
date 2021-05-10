@@ -3,9 +3,11 @@ package com.aksh.kcl.enh.consumer.processor;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
+import java.util.Optional;
 
 import org.slf4j.MDC;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -70,7 +72,7 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
             // For this app, we interpret the payload as UTF-8 chars.
             data = decoder.decode(record.data()).toString();
             // Assume this record came from AmazonKinesisSample and log its age.
-            long recordCreateTime = new Long(data.substring("testData-".length()));
+            long recordCreateTime = getRecordTime(data);
             long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
 
             log.info(record.sequenceNumber() + ", " + record.partitionKey() + ", " + data + ", Created "
@@ -81,6 +83,18 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
             log.error("Malformed data: " + data, e);
         }
     }
+    
+    private long getRecordTime(String data) {
+		long recordCreateTime=System.currentTimeMillis()+100000;
+		try {
+			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
+					.orElse(data.substring("testData-".length())).toString();
+			recordCreateTime= new Long(time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return recordCreateTime;
+	}
 
 	public void leaseLost(LeaseLostInput leaseLostInput) {
 		MDC.put(SHARD_ID_MDC_KEY, shardId);

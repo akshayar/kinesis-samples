@@ -4,8 +4,10 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -113,8 +115,8 @@ public class SampleRecordProcessor implements IRecordProcessor {
             // For this app, we interpret the payload as UTF-8 chars.
             data = decoder.decode(record.getData()).toString();
             // Assume this record came from AmazonKinesisSample and log its age.
-            long recordCreateTime = new Long(data.substring("testData-".length()));
-            long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
+			long recordCreateTime = getRecordTime(data);
+			long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
 
             log.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
                     + ageOfRecordInMillis + " milliseconds ago.");
@@ -124,6 +126,18 @@ public class SampleRecordProcessor implements IRecordProcessor {
             log.error("Malformed data: " + data, e);
         }
     }
+
+	private long getRecordTime(String data) {
+		long recordCreateTime=System.currentTimeMillis()+100000;
+		try {
+			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
+					.orElse(data.substring("testData-".length())).toString();
+			recordCreateTime= new Long(time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return recordCreateTime;
+	}
 
     /**
      * {@inheritDoc}
