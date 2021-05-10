@@ -1,7 +1,5 @@
 package com.aksh.kinesislambda.dao;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -10,10 +8,6 @@ import org.junit.runner.RunWith;
 import com.aksh.kinesislambda.UTBeanConfig;
 import com.aksh.kinesislambda.dto.Customer;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeyType;
 
 import cloud.localstack.LocalstackTestRunner;
 import cloud.localstack.TestUtils;

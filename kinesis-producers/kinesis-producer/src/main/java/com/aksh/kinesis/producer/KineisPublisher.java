@@ -10,12 +10,14 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
+import com.google.gson.Gson;
 
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
@@ -43,6 +45,8 @@ class KineisPublisher {
 
 	AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
 	String template;
+	
+	Gson gson=new Gson();
 
 	private String createPayload() throws IOException {
 		return randomize(template);
@@ -53,9 +57,13 @@ class KineisPublisher {
 		try {
 			S3Object object = s3.getObject(bucket, "kinesis/payload/file.txt");
 			template = IoUtils.toUtf8String(object.getObjectContent().getDelegateStream());
+			String time = Optional.ofNullable(new GsonJsonParser().parseMap(template).get("time"))
+					.orElse(template.substring("testData-".length())).toString();
+			System.out.println("Time from template:"+template+", is:"+time);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
+		
 		return template;
 	}
 

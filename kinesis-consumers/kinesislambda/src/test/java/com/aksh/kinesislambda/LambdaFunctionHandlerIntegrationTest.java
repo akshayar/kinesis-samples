@@ -7,21 +7,14 @@ import java.io.UncheckedIOException;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 
 import com.aksh.kinesislambda.dao.CustomerDao;
 import com.aksh.kinesislambda.dto.Customer;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
 import com.amazonaws.util.StringInputStream;
-
-import cloud.localstack.LocalstackTestRunner;
-import cloud.localstack.docker.annotation.LocalstackDockerProperties;
 
 /**
  * A simple test harness for locally invoking your Lambda function handler.
