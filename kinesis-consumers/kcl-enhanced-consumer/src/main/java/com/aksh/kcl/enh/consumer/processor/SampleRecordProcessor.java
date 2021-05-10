@@ -91,7 +91,7 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 					.orElse(data.substring("testData-".length())).toString();
 			recordCreateTime= new Long(time);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error processing "+data,e);
 		}
 		return recordCreateTime;
 	}
