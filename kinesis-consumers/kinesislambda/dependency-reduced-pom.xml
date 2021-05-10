@@ -36,6 +36,30 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>cloud.localstack</groupId>
+      <artifactId>localstack-utils</artifactId>
+      <version>0.2.1</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-lang3</artifactId>
+          <groupId>org.apache.commons</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jna</artifactId>
+          <groupId>net.java.dev.jna</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>winp</artifactId>
+          <groupId>org.jvnet.winp</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>aws-java-sdk-lambda</artifactId>
+          <groupId>com.amazonaws</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 </project>
 
