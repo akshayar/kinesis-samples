@@ -14,6 +14,7 @@ import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
+import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.S3Object;
@@ -47,9 +48,14 @@ class KineisPublisher {
 	String template;
 	
 	Gson gson=new Gson();
+	
+	@Value("${intervalMs:100}")
+	int intervalMs=100;
 
 	private String createPayload() throws IOException {
-		return randomize(template);
+		String payload= randomize(template);
+		System.out.println("Pushing Record " + payload);
+		return payload;
 	}
 
 	private String readTemplate() throws IOException {
@@ -100,13 +106,20 @@ class KineisPublisher {
 		// KinesisProducer gets credentials automatically like
 		// DefaultAWSCredentialsProviderChain.
 		// It also gets region automatically from the EC2 metadata service.
-		KinesisProducer kinesis = new KinesisProducer();
+		KinesisProducerConfiguration config=new KinesisProducerConfiguration();
+		config.setRegion(region.id());
+		config.setAggregationEnabled(true);
+		KinesisProducer kinesis = new KinesisProducer(config);
+		
 		// Put some records
+		int i = 0;
 		while (true) {
 			String payload = createPayload();
 			ByteBuffer data = ByteBuffer.wrap(payload.getBytes("UTF-8"));
 			// doesn't block
-			kinesis.addUserRecord("myStream", "myPartitionKey", data);
+			kinesis.addUserRecord(streamName, partitionPrefix + i % 4, data);
+			sleep();
+			i++;
 		}
 	}
 
@@ -121,7 +134,6 @@ class KineisPublisher {
 				String payload;
 				try {
 					payload = createPayload();
-					System.out.println("Pushing Record " + payload);
 					PutRecordRequest req = PutRecordRequest.builder().streamName(streamName)
 							.data(SdkBytes.fromUtf8String(payload)).partitionKey(partitionPrefix + i % 4).build();
 					client.putRecord(req);
@@ -137,7 +149,7 @@ class KineisPublisher {
 
 	private void sleep() {
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(intervalMs);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
