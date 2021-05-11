@@ -17,7 +17,7 @@
       "volumesFrom": [],
       "image": "799223504601.dkr.ecr.ap-south-1.amazonaws.com/kinesis-consumers/kcl-enhanced-consumer:latest",
       "essential": true,
-      "name": "kcl-consmer"
+      "name": "kcl-enhanced-consumer"
     }
   ],
   "placementConstraints": [],

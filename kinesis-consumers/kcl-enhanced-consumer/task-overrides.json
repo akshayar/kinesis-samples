@@ -1,0 +1,9 @@
+{
+    "containerOverrides": [{
+        "name": "kcl-enhanced-consumer",
+        "environment": [{
+            "name": "STREAM_NAME",
+            "value": "aksh-first-second"
+        }]
+    }]
+}

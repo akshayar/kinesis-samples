@@ -53,6 +53,7 @@ public class ApplicationBootStrapper {
 
 	@PostConstruct
 	private void run() {
+		log.info("Stream Name="+streamName);
 
 		ConfigsBuilder configsBuilder = new ConfigsBuilder(streamName, applicationName, kinesisClient, dynamoClient,
 				cloudWatchClient, applicationName+UUID.randomUUID().toString(), recordProcessorFactory);

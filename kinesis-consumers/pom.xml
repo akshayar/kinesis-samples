@@ -47,5 +47,6 @@
         <module>kinesislambda</module>
         <module>kcl-consumer</module>
         <module>kcl-enhanced-consumer</module>
+        <module>kinesis-data-analytics-flink</module>
     </modules>
 </project>

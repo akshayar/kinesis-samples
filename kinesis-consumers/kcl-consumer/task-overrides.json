@@ -1,0 +1,9 @@
+{
+    "containerOverrides": [{
+        "name": "kcl-consmer",
+        "environment": [{
+            "name": "STREAM_NAME",
+            "value": "aksh-out"
+        }]
+    }]
+}
