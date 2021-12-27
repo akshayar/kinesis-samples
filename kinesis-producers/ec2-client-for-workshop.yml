@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Builds the kinesis-analytics-taxi-consumer Flink application and provisions the basic infrastructure for the streaming workshop (streaming-workshop-infrastructure)
+
+Parameters:
+  InstanceAMI:
+    Description: AMI
+    Default: ami-0889b8a448de4fc44
+    Type: String
+  RoleName:
+    Description: Role Name
+    Default: ec2-ssm-role
+    Type: String
+  SecurityGroupId:
+    Description: Security Group
+    Default: sg-053506dfc3d194746
+    Type: String
+  InstanceType:
+    Description: Instance Type
+    Default: m5.large
+    Type: String
+
+    
+
+Outputs:
+  KinesisReplayInstance:
+    Description: The URL to the Session Management Console for this instance 
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/systems-manager/session-manager/${KinesisReplayInstance}?region=${AWS::Region}  
+
+Resources:
+ 
+  KinesisReplayInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId:
+        Fn::FindInMap:
+        - AWSRegionArch2AMI
+        - !Ref AWS::Region
+        - HVM64
+      Monitoring: true
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref KinesisReplayInstanceProfile
+      AvailabilityZone: 
+        Fn::Select:
+         - 0
+         - Fn::GetAZs: {Ref: 'AWS::Region'}
+      SubnetId:
+        Fn::ImportValue:
+            Fn::Sub: ecs-demo:PublicSubnetOne
+      SecurityGroupIds:
+      - !Ref SecurityGroupId
+      Tags:
+      - Key: Application
+        Value: !Ref AWS::StackId
+      - Key: Name
+        Value: !Sub ${AWS::StackName}-instance
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -x
+            
+            yum update -y
+            yum install -y tmux
+
+            # install Java 11
+            amazon-linux-extras enable java-openjdk11
+            yum install -y java-11-openjdk
+
+            # wait until CF stack, in particular the EIP association, was created successfully
+            aws --region ${AWS::Region} cloudformation wait stack-create-complete --stack-name '${AWS::StackName}'
+
+        
+  KinesisReplayInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: RoleName
+
+
+Mappings:
+  AWSRegionArch2AMI:
+    eu-west-1:
+      HVM64: ami-07683a44e80cd32c5
+    us-west-2:
+      HVM64: ami-061392db613a6357b
+    us-east-1:
+      HVM64: ami-0de53d8956e8dcf80
+    us-east-2:
+      HVM64: ami-02bcbb802e03574ba
+    ap-south-1:
+      HVM64: ami-0889b8a448de4fc44

@@ -89,9 +89,9 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 		try {
 			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
 					.orElse(data.substring("testData-".length())).toString();
-			recordCreateTime= new Long(time);
+			recordCreateTime= org.apache.commons.lang3.math.NumberUtils.toLong(time);
 		} catch (Exception e) {
-			log.error("Error processing "+data,e);
+			log.debug("Error processing "+data,e);
 		}
 		return recordCreateTime;
 	}

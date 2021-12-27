@@ -3,7 +3,6 @@
  */
 package com.aksh.kcl.consumer;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +22,13 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 
+import lombok.extern.java.Log;
+
 /**
  * Sample Amazon Kinesis Application.
  */
 @SpringBootApplication
+@Log
 public class KclApplicationSample {
 
 	@Value("${region:ap-south-1}")
@@ -66,6 +68,7 @@ public class KclApplicationSample {
 	@Bean
 	public AWSCredentialsProvider initCredentials() {
 		if (!Optional.ofNullable(System.getProperty("server.host")).isPresent()) {
+			log.info("server.host "+System.getProperty("server.host"));
 			return new EC2ContainerCredentialsProviderWrapper();
 		} else {
 			// Ensure the JVM will refresh the cached IP values of AWS resources (e.g. //

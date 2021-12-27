@@ -5,7 +5,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +20,7 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.clientlibrary.lib.worker.ShutdownReason;
 import com.amazonaws.services.kinesis.model.Record;
+import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +43,12 @@ public class SampleRecordProcessor implements IRecordProcessor {
     private long nextCheckpointTimeInMillis;
 
     private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+   
+    @Autowired
+    private TradeDao tradeDao;
+    private Gson gson=new Gson();
+    
+    Random random=new Random();
 
     /**
      * {@inheritDoc}
@@ -80,6 +89,7 @@ public class SampleRecordProcessor implements IRecordProcessor {
                     //
                     // Logic to process record goes here.
                     //
+                	Thread.sleep(random.nextInt(10000));
                     processSingleRecord(record);
 
                     processedSuccessfully = true;
@@ -114,12 +124,20 @@ public class SampleRecordProcessor implements IRecordProcessor {
         try {
             // For this app, we interpret the payload as UTF-8 chars.
             data = decoder.decode(record.getData()).toString();
+            log.info("Data Receieved:"+data);
             // Assume this record came from AmazonKinesisSample and log its age.
-			long recordCreateTime = getRecordTime(data);
-			long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
+            Trade trade=gson.fromJson(data, Trade.class);
+            if(Optional.ofNullable(trade).isPresent()) {
+            	long recordCreateTime = trade.getTimestamp();
+    			long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
+    			tradeDao.save(trade);
 
-            log.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
-                    + ageOfRecordInMillis + " milliseconds ago.");
+                log.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
+                        + ageOfRecordInMillis + " milliseconds ago.");
+            }else {
+            	 log.info("Nulll Record");
+            }
+			
         } catch (NumberFormatException e) {
             log.info("Record does not match sample record format. Ignoring record with data; " + data);
         } catch (CharacterCodingException e) {
@@ -132,7 +150,7 @@ public class SampleRecordProcessor implements IRecordProcessor {
 		try {
 			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
 					.orElse(data.substring("testData-".length())).toString();
-			recordCreateTime= new Long(time);
+			recordCreateTime= org.apache.commons.lang3.math.NumberUtils.toLong(time);
 		} catch (Exception e) {
 			log.error("Error processing "+data,e);
 		}
