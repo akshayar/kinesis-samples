@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer.fake;
+package com.aksh.kinesis.producer.faker;
 
 public interface IRandomGenerator<T> {
     public String createPayload(Class<T> type,String templateFile) throws Exception;

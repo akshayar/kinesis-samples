@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.publisher;
 
 import java.nio.ByteBuffer;
 import java.util.Properties;

@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.avro;
 
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;

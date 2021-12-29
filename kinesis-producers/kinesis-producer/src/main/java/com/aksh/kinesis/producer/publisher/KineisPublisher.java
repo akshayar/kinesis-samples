@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.publisher;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ class KineisPublisher implements ApplicationContextAware {
 	int intervalMs=100;
 
 	@Autowired
-	AvroByteArrayFromRandomObject byteArrayGenerationStrategy;
+	AvroByteArrayFromRandomObjectGenStrategy byteArrayGenerationStrategy;
 
 	private ApplicationContext applicationContext;
 

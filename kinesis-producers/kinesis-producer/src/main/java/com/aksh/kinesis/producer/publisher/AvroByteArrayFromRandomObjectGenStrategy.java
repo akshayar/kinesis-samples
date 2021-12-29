@@ -1,6 +1,7 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.publisher;
 
-import com.aksh.kinesis.producer.fake.JSRandomDataGenerator;
+import com.aksh.kinesis.producer.avro.AvroSerDe;
+import com.aksh.kinesis.producer.faker.JSRandomDataGenerator;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 @Component
-public class AvroByteArrayFromRandomObject implements ByteArrayGenerationStrategy{
+public class AvroByteArrayFromRandomObjectGenStrategy implements ByteArrayGenerationStrategy {
     @Value("${avroSchemaPath:src/main/resources/avro/com/aksh/kafka/avro/fake/TradeData.avsc}")
     private String avroSchemaPath;
 
@@ -28,9 +29,9 @@ public class AvroByteArrayFromRandomObject implements ByteArrayGenerationStrateg
 
     AvroSerDe avroSerDe=new AvroSerDe();
 
-    public AvroByteArrayFromRandomObject() {
+    public AvroByteArrayFromRandomObjectGenStrategy() {
     }
-    public AvroByteArrayFromRandomObject(JSRandomDataGenerator jsRandomDataGenerator) {
+    public AvroByteArrayFromRandomObjectGenStrategy(JSRandomDataGenerator jsRandomDataGenerator) {
         this.jsRandomDataGenerator = jsRandomDataGenerator;
     }
 

@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.publisher;
 
 import com.amazonaws.services.kinesis.producer.KinesisProducer;
 import com.amazonaws.services.kinesis.producer.KinesisProducerConfiguration;

@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.random.gen;
 
 import com.amazonaws.util.StringUtils;
 import org.apache.commons.io.FileUtils;

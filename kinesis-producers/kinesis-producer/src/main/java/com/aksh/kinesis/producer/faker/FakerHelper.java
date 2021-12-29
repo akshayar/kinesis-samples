@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer.fake;
+package com.aksh.kinesis.producer.faker;
 
 import com.github.javafaker.Faker;
 

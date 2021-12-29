@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer.fake;
+package com.aksh.kinesis.producer.faker;
 
 import lombok.Data;
 import lombok.ToString;

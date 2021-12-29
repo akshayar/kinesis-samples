@@ -1,6 +1,6 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kinesis.producer.publisher;
 
-import com.aksh.kinesis.producer.fake.JSRandomDataGenerator;
+import com.aksh.kinesis.producer.faker.JSRandomDataGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 @Component
-public class JsonByteArrayFromRandomObject implements ByteArrayGenerationStrategy{
+public class JsonByteArrayFromRandomObjectGenStrategy implements ByteArrayGenerationStrategy {
     @Autowired
     JSRandomDataGenerator jsRandomDataGenerator;
     @Value("${faker.fakeGeneratorJSScript:src/main/resources/generate-data.js}")

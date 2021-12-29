@@ -1,8 +1,9 @@
 package com.aksh.kinesis.producer;
 
 import com.aksh.kafka.avro.fake.TradeData;
-import com.aksh.kinesis.producer.fake.FakeRandomGenerator;
-import com.aksh.kinesis.producer.fake.JSRandomDataGenerator;
+import com.aksh.kinesis.producer.avro.AvroSerDe;
+import com.aksh.kinesis.producer.faker.FakeRandomGenerator;
+import com.aksh.kinesis.producer.faker.JSRandomDataGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;

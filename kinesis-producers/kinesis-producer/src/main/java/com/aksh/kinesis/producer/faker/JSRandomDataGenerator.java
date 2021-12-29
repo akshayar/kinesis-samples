@@ -1,4 +1,4 @@
-package com.aksh.kinesis.producer.fake;
+package com.aksh.kinesis.producer.faker;
 
 import com.google.gson.Gson;
 import org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory;
