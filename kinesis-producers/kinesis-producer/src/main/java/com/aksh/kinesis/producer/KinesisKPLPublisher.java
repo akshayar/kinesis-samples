@@ -31,20 +31,21 @@ public class KinesisKPLPublisher {
         // It also gets region automatically from the EC2 metadata service.
         KinesisProducerConfiguration config = new KinesisProducerConfiguration().setAggregationEnabled(aggregationEnabled)
                 .setRecordMaxBufferedTime(3000).setMaxConnections(1).setRequestTimeout(60000);
+        config.setRegion(region.id());
 
-
+        //Glue Schema Registery Code
         GlueSchemaRegistryConfiguration schemaRegistryConfig =new GlueSchemaRegistryConfiguration(region.id());
         schemaRegistryConfig.setCompressionType(AWSSchemaRegistryConstants.COMPRESSION.NONE);
         schemaRegistryConfig.setSchemaAutoRegistrationEnabled(true);
 
-        config.setRegion(region.id());
+
         config.setGlueSchemaRegistryConfiguration(schemaRegistryConfig);
-
-
-        KinesisProducer kinesis = new KinesisProducer(config);
         String schemaDefinition= FileCopyUtils.copyToString(new FileReader("src/main/resources/avro/com/aksh/kafka/avro/fake/TradeData.avsc"));
         com.amazonaws.services.schemaregistry.common.Schema gsrSchema =
                 new com.amazonaws.services.schemaregistry.common.Schema(schemaDefinition, DataFormat.AVRO.toString(), "demoSchema");
+
+
+        KinesisProducer kinesis = new KinesisProducer(config);
 
         // Put some records
         int i = 0;
@@ -53,7 +54,7 @@ public class KinesisKPLPublisher {
             ByteBuffer data=dataSupplier.get();
             String hashKey=System.currentTimeMillis()+"";
             String partitionKey=partitionPrefix + i % 4;
-
+            //kinesis.addUserRecord(streamName,partitionKey , dataSupplier.get());
             kinesis.addUserRecord(streamName,partitionKey ,hashKey , dataSupplier.get(),gsrSchema);
             i++;
         }
