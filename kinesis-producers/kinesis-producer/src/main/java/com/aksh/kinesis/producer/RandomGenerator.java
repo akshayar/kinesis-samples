@@ -1,38 +1,29 @@
 package com.aksh.kinesis.producer;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
+import com.amazonaws.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.util.StringUtils;
-
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.utils.IoUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class RandomGenerator {
 	
-	AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
+	S3Client s3 = S3Client.builder().build();
 	
 	String template;
 	
@@ -80,8 +71,8 @@ public class RandomGenerator {
 			if(StringUtils.isNullOrEmpty(bucket)) {
 				template=FileUtils.readFileToString(new File(templatePath));
 			}else {
-				S3Object object = s3.getObject(bucket, templatePath);
-				template = IoUtils.toUtf8String(object.getObjectContent().getDelegateStream());
+				ResponseInputStream object = s3.getObject(GetObjectRequest.builder().bucket(bucket).key(templatePath).build());
+				template = IoUtils.toUtf8String(object);
 				String time = Optional.ofNullable(new GsonJsonParser().parseMap(template).get("time"))
 						.orElse(template.substring("testData-".length())).toString();
 				System.out.println("Time from template:"+template+", is:"+time);
