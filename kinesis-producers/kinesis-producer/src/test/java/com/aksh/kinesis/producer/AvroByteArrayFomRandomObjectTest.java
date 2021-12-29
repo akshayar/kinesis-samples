@@ -2,7 +2,7 @@ package com.aksh.kinesis.producer;
 
 import com.aksh.kinesis.producer.avro.AvroSerDe;
 import com.aksh.kinesis.producer.faker.JSRandomDataGenerator;
-import com.aksh.kinesis.producer.publisher.AvroByteArrayFromRandomObjectGenStrategy;
+import com.aksh.kinesis.producer.publisher.AvroDataFromRandomObjectGenStrategy;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.Properties;
 
 public class AvroByteArrayFomRandomObjectTest {
-    AvroByteArrayFromRandomObjectGenStrategy avroByteArrayFromRandomObjectGenStrategy =new AvroByteArrayFromRandomObjectGenStrategy(new JSRandomDataGenerator());
+    AvroDataFromRandomObjectGenStrategy avroByteArrayFromRandomObjectGenStrategy =new AvroDataFromRandomObjectGenStrategy(new JSRandomDataGenerator());
     AvroSerDe avroSerDe=new AvroSerDe();
     @Test
     public void serialize() throws  Exception{

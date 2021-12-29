@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import java.nio.ByteBuffer;
 import java.util.Properties;
 @Component
-public class JsonByteArrayFromRandomObjectGenStrategy implements ByteArrayGenerationStrategy {
+public class JsonDataFromRandomObjectGenStrategy implements DataGenerationStrategy {
     @Autowired
     JSRandomDataGenerator jsRandomDataGenerator;
     @Value("${faker.fakeGeneratorJSScript:src/main/resources/generate-data.js}")
@@ -19,7 +19,7 @@ public class JsonByteArrayFromRandomObjectGenStrategy implements ByteArrayGenera
     }
 
     private ByteBuffer getGenerateDataAsByteBuffer() throws Exception {
-        String payload = jsRandomDataGenerator.createPayload();
+        String payload = jsRandomDataGenerator.createPayload(null,fakeGeneratorJSScript);
         System.out.println("Data Push: " + payload);
         ByteBuffer data = ByteBuffer.wrap(payload.getBytes("UTF-8"));
         return data;

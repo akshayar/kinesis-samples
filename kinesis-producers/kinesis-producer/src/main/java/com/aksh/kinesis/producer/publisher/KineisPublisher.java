@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 @Component
 class KineisPublisher implements ApplicationContextAware {
@@ -21,8 +25,10 @@ class KineisPublisher implements ApplicationContextAware {
 	@Value("${intervalMs:100}")
 	int intervalMs=100;
 
-	@Autowired
-	AvroByteArrayFromRandomObjectGenStrategy byteArrayGenerationStrategy;
+	@Value("${DataGenerationStrategy.type}")
+	String dataGenerationStrategyType="AVRO";
+
+	DataGenerationStrategy dataGenerationStrategy;
 
 	private ApplicationContext applicationContext;
 
@@ -32,33 +38,47 @@ class KineisPublisher implements ApplicationContextAware {
 		this.applicationContext=applicationContext;
 	}
 
-
 	@PostConstruct
-	void pubish() throws Exception {
+	public void init() throws Exception{
+		if("AVRO".equalsIgnoreCase(dataGenerationStrategyType)){
+			dataGenerationStrategy=applicationContext.getBean(AvroDataFromRandomObjectGenStrategy.class);
+		}else{
+			dataGenerationStrategy=applicationContext.getBean(JsonDataFromRandomObjectGenStrategy.class);
+		}
+		ExecutorService executorService=Executors.newCachedThreadPool();
+		CompletableFuture future= CompletableFuture.supplyAsync(()->{
+			try {
+				this.publish();
+				return "SUCCESS";
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		},executorService).exceptionally(ex->{
+			ex.printStackTrace();
+			return "FAILURE";
+		});
+		executorService.shutdown();
+	}
+
+
+
+	void publish() throws Exception {
+		Supplier<ByteBuffer> dataSupplier=()->{
+			ByteBuffer data = null;
+			try {
+				data = dataGenerationStrategy.generateData();
+				sleep();
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw new RuntimeException(e);
+			}
+			return data;
+		};
 
 		if (Optional.ofNullable(type).orElse("api").equalsIgnoreCase("api")) {
-
-			applicationContext.getBean(KinesisSKDPublisher.class).publish(()->{
-				ByteBuffer data = null;
-				try {
-					data = byteArrayGenerationStrategy.generateData();
-					sleep();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return data;
-			});
+			applicationContext.getBean(KinesisSKDPublisher.class).publish(dataSupplier);
 		} else {
-			applicationContext.getBean(KinesisKPLPublisher.class).publish(()->{
-				ByteBuffer data = null;
-				try {
-					data = byteArrayGenerationStrategy.generateData();
-					sleep();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				return data;
-			});
+			applicationContext.getBean(KinesisKPLPublisher.class).publish(dataSupplier);
 		}
 
 	}

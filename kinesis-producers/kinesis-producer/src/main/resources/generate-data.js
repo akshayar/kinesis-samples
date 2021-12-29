@@ -1,4 +1,4 @@
-var FakerHelper = Java.type('com.aksh.kinesis.producer.fake.FakerHelper');
+var FakerHelper = Java.type('com.aksh.kinesis.producer.faker.FakerHelper');
 var Properties = Java.type('java.util.Properties');
 var TimeUnit = Java.type('java.util.concurrent.TimeUnit') ;
 var outValue = new Properties();

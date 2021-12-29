@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 @Component
-public class AvroByteArrayFromRandomObjectGenStrategy implements ByteArrayGenerationStrategy {
+public class AvroDataFromRandomObjectGenStrategy implements DataGenerationStrategy {
     @Value("${avroSchemaPath:src/main/resources/avro/com/aksh/kafka/avro/fake/TradeData.avsc}")
     private String avroSchemaPath;
 
@@ -29,9 +29,9 @@ public class AvroByteArrayFromRandomObjectGenStrategy implements ByteArrayGenera
 
     AvroSerDe avroSerDe=new AvroSerDe();
 
-    public AvroByteArrayFromRandomObjectGenStrategy() {
+    public AvroDataFromRandomObjectGenStrategy() {
     }
-    public AvroByteArrayFromRandomObjectGenStrategy(JSRandomDataGenerator jsRandomDataGenerator) {
+    public AvroDataFromRandomObjectGenStrategy(JSRandomDataGenerator jsRandomDataGenerator) {
         this.jsRandomDataGenerator = jsRandomDataGenerator;
     }
 
