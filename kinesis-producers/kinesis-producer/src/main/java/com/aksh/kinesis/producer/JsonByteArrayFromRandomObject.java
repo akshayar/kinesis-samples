@@ -11,7 +11,7 @@ import java.util.Properties;
 public class JsonByteArrayFromRandomObject implements ByteArrayGenerationStrategy{
     @Autowired
     JSRandomDataGenerator jsRandomDataGenerator;
-    @Value("${fakeGeneratorJSScript:src/main/resources/generate-data.js}")
+    @Value("${faker.fakeGeneratorJSScript:src/main/resources/generate-data.js}")
     private String fakeGeneratorJSScript;
     @Override
     public ByteBuffer generateData() throws Exception {

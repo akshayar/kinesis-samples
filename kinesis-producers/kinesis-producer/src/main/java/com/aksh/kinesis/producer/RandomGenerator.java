@@ -27,13 +27,13 @@ public class RandomGenerator {
 	
 	String template;
 	
-	@Value("${bucketName:aksh-test-versioning}")
+	@Value("${RandomGenerator.bucketName:aksh-test-versioning}")
 	String bucket = "aksh-test-versioning";
 	
-	@Value("${templatePath:kinesis/payload/file.txt}")
+	@Value("${RandomGenerator.templatePath:kinesis/payload/file.txt}")
 	String templatePath="kinesis/payload/file.txt";
 	
-	@Value("${randomizedProperties:null}")
+	@Value("${RandomGenerator.randomizedProperties:null}")
 	String randomizedProperties;
 	
 	Map<String,List<String>> mapOfRandomizedValues;
@@ -48,7 +48,7 @@ public class RandomGenerator {
 	@PostConstruct
 	void pubish() throws Exception {
 		template = readTemplate();
-		System.out.println(env.getProperty("symbols"));
+		System.out.println(env.getProperty("RandomGenerator.symbols"));
 		List<String> randomizedSymols=Optional.ofNullable(randomizedProperties).map(s->s.split(",")).map(Arrays::asList).orElse(Collections.EMPTY_LIST);
 		mapOfRandomizedValues=randomizedSymols.stream().collect(Collectors.toMap(s->s, this::getListOfProperty));
 		System.out.println(mapOfRandomizedValues);

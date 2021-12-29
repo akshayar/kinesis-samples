@@ -1,5 +1,7 @@
 package com.aksh.kinesis.producer;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
@@ -11,16 +13,22 @@ import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 public class KinesisSKDPublisher {
-    private Region region;
-    private boolean aggregationEnabled=false;
-    private String streamName;
-    private String partitionPrefix;
 
-    public KinesisSKDPublisher(Region region, boolean aggregationEnabled, String streamName, String partitionPrefix) {
+    @Autowired
+    private Region region;
+
+    @Value("${streamName:aksh-first}")
+    String streamName = "aksh-first";
+
+    String partitionPrefix = "partitionPrefix";
+
+    public KinesisSKDPublisher() {
+    }
+
+    public KinesisSKDPublisher(Region region, String streamName, String partitionPrefix) {
         this.region = region;
-        this.aggregationEnabled = aggregationEnabled;
-        this.streamName=streamName;
-        this.partitionPrefix=partitionPrefix;
+        this.streamName = streamName;
+        this.partitionPrefix = partitionPrefix;
     }
 
     public void publish(Supplier<ByteBuffer> dataSupplier) throws Exception {

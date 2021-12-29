@@ -20,7 +20,7 @@ public class AvroByteArrayFromRandomObject implements ByteArrayGenerationStrateg
     @Value("${avroSchemaPath:src/main/resources/avro/com/aksh/kafka/avro/fake/TradeData.avsc}")
     private String avroSchemaPath;
 
-    @Value("${fakeGeneratorJSScript:src/main/resources/generate-data.js}")
+    @Value("${faker.fakeGeneratorJSScript:src/main/resources/generate-data.js}")
     private String fakeGeneratorJSScript;
 
     @Autowired

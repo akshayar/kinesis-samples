@@ -1,31 +1,22 @@
 package com.aksh.kinesis.producer;
 
-import com.google.gson.Gson;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
-import software.amazon.awssdk.regions.Region;
 
 import javax.annotation.PostConstruct;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
 @Component
-class KineisPublisher {
+class KineisPublisher implements ApplicationContextAware {
 
-	@Autowired
-	private Region region;
-
-	@Value("${streamName:aksh-first}")
-	String streamName = "aksh-first";
 
 	@Value("${publishType:api}")
 	String type = "api";
-
-	String partitionPrefix = "partitionPrefix";
-
-	
-	Gson gson=new Gson();
 	
 	@Value("${intervalMs:100}")
 	int intervalMs=100;
@@ -33,19 +24,21 @@ class KineisPublisher {
 	@Autowired
 	AvroByteArrayFromRandomObject byteArrayGenerationStrategy;
 
-	
-	@Value("${aggregationEnabled:false}")
-	private boolean aggregationEnabled;
+	private ApplicationContext applicationContext;
 
-	
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		this.applicationContext=applicationContext;
+	}
+
 
 	@PostConstruct
 	void pubish() throws Exception {
 
 		if (Optional.ofNullable(type).orElse("api").equalsIgnoreCase("api")) {
 
-
-			new KinesisSKDPublisher(region,aggregationEnabled,streamName,partitionPrefix).publish(()->{
+			applicationContext.getBean(KinesisSKDPublisher.class).publish(()->{
 				ByteBuffer data = null;
 				try {
 					data = byteArrayGenerationStrategy.generateData();
@@ -56,7 +49,7 @@ class KineisPublisher {
 				return data;
 			});
 		} else {
-			new KinesisKPLPublisher(region,aggregationEnabled,streamName,partitionPrefix).publish(()->{
+			applicationContext.getBean(KinesisKPLPublisher.class).publish(()->{
 				ByteBuffer data = null;
 				try {
 					data = byteArrayGenerationStrategy.generateData();
