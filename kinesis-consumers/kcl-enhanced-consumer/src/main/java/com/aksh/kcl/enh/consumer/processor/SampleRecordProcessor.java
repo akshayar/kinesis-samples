@@ -1,26 +1,26 @@
 package com.aksh.kcl.enh.consumer.processor;
 
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.Optional;
-
+import com.aksh.avro.AvroSerDe;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.generic.GenericRecord;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
-import software.amazon.kinesis.lifecycle.events.InitializationInput;
-import software.amazon.kinesis.lifecycle.events.LeaseLostInput;
-import software.amazon.kinesis.lifecycle.events.ProcessRecordsInput;
-import software.amazon.kinesis.lifecycle.events.ShardEndedInput;
-import software.amazon.kinesis.lifecycle.events.ShutdownRequestedInput;
+import software.amazon.kinesis.lifecycle.events.*;
 import software.amazon.kinesis.processor.ShardRecordProcessor;
 import software.amazon.kinesis.retrieval.KinesisClientRecord;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.Optional;
 
 /**
  * Processes records and checkpoints progress.
@@ -34,6 +34,8 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 
 	private String shardId;
 	private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
+
+	AvroSerDe avroSerDe=new AvroSerDe();
 
 	public void initialize(InitializationInput initializationInput) {
 		shardId = initializationInput.shardId();
@@ -64,27 +66,52 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
      * @param record The record to be processed.
      */
     private void processSingleRecord(KinesisClientRecord record) {
-        // TODO Add your own record processing logic here
     	log.debug("Processing record pk: {} -- Seq: {}", record.partitionKey(), record.sequenceNumber());
-
-        String data = null;
         try {
-            // For this app, we interpret the payload as UTF-8 chars.
-            data = decoder.decode(record.data()).toString();
-            // Assume this record came from AmazonKinesisSample and log its age.
-            long recordCreateTime = getRecordTime(data);
-            long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
-
-            log.info(record.sequenceNumber() + ", " + record.partitionKey() + ", " + data + ", Created "
-                    + ageOfRecordInMillis + " milliseconds ago.");
-        } catch (NumberFormatException e) {
-            log.info("Record does not match sample record format. Ignoring record with data; " + data);
-        } catch (CharacterCodingException e) {
-            log.error("Malformed data: " + data, e);
+			processAvroRecord(record);
+			//processJsonRecord(record);
+		} catch (Exception e) {
+            log.info("Error in processing " , e);
         }
     }
-    
-    private long getRecordTime(String data) {
+
+	private void processAvroRecord(KinesisClientRecord record) throws Exception {
+		ByteBuffer data=record.data();
+    	if(record.data().isReadOnly()){
+			ByteBuffer duplicateData = ByteBuffer.allocate(data.capacity());
+			while(data.hasRemaining()){
+				duplicateData.put(data.get());
+			}
+			duplicateData.flip();
+			data=duplicateData;
+		}
+		log.info("Data Receieved:" + new String(data.array()));
+
+		String avroSchema = "src/main/resources/avro/com/aksh/kcl/avro/fake/TradeData.avsc";
+		GenericRecord genericRecord = avroSerDe.deserializeGeneric(new FileInputStream(avroSchema), data);
+		log.info("Data After Parsing :" + genericRecord);
+	}
+
+	private void processJsonRecord(KinesisClientRecord record)  {
+		String data = null;
+    	try{
+			// For this app, we interpret the payload as UTF-8 chars.
+			data = decoder.decode(record.data()).toString();
+			// Assume this record came from AmazonKinesisSample and log its age.
+			long recordCreateTime = getRecordTime(data);
+			long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
+
+			log.info(record.sequenceNumber() + ", " + record.partitionKey() + ", " + data + ", Created "
+					+ ageOfRecordInMillis + " milliseconds ago.");
+
+		}catch (CharacterCodingException e) {
+			log.error("Malformed data: " + data, e);
+		}catch (NumberFormatException e) {
+			log.info("Record does not match sample record format. Ignoring record with data; " + data);
+		}
+	}
+
+	private long getRecordTime(String data) {
 		long recordCreateTime=System.currentTimeMillis()+100000;
 		try {
 			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
