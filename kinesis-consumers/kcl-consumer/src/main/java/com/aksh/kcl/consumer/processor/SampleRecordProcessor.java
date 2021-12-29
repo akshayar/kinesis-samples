@@ -41,13 +41,10 @@ public class SampleRecordProcessor implements IRecordProcessor {
     // Checkpoint about once a minute
     private static final long CHECKPOINT_INTERVAL_MILLIS = 60000L;
     private long nextCheckpointTimeInMillis;
-
-    private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
    
     @Autowired
-    private TradeDao tradeDao;
-    private Gson gson=new Gson();
-    
+    SingleRecordProcessor singleRecordProcessor;
+
     Random random=new Random();
 
     /**
@@ -90,7 +87,7 @@ public class SampleRecordProcessor implements IRecordProcessor {
                     // Logic to process record goes here.
                     //
                 	Thread.sleep(random.nextInt(10000));
-                    processSingleRecord(record);
+                    singleRecordProcessor.processSingleRecord(record);
 
                     processedSuccessfully = true;
                     break;
@@ -112,50 +109,8 @@ public class SampleRecordProcessor implements IRecordProcessor {
         }
     }
 
-    /**
-     * Process a single record.
-     * 
-     * @param record The record to be processed.
-     */
-    private void processSingleRecord(Record record) {
-        // TODO Add your own record processing logic here
 
-        String data = null;
-        try {
-            // For this app, we interpret the payload as UTF-8 chars.
-            data = decoder.decode(record.getData()).toString();
-            log.info("Data Receieved:"+data);
-            // Assume this record came from AmazonKinesisSample and log its age.
-            Trade trade=gson.fromJson(data, Trade.class);
-            if(Optional.ofNullable(trade).isPresent()) {
-            	long recordCreateTime = trade.getTimestamp();
-    			long ageOfRecordInMillis = System.currentTimeMillis() - recordCreateTime;
-    			tradeDao.save(trade);
 
-                log.info(record.getSequenceNumber() + ", " + record.getPartitionKey() + ", " + data + ", Created "
-                        + ageOfRecordInMillis + " milliseconds ago.");
-            }else {
-            	 log.info("Nulll Record");
-            }
-			
-        } catch (NumberFormatException e) {
-            log.info("Record does not match sample record format. Ignoring record with data; " + data);
-        } catch (CharacterCodingException e) {
-            log.error("Malformed data: " + data, e);
-        }
-    }
-
-	private long getRecordTime(String data) {
-		long recordCreateTime=System.currentTimeMillis()+100000;
-		try {
-			String time = Optional.ofNullable(new GsonJsonParser().parseMap(data).get("time"))
-					.orElse(data.substring("testData-".length())).toString();
-			recordCreateTime= org.apache.commons.lang3.math.NumberUtils.toLong(time);
-		} catch (Exception e) {
-			log.error("Error processing "+data,e);
-		}
-		return recordCreateTime;
-	}
 
     /**
      * {@inheritDoc}

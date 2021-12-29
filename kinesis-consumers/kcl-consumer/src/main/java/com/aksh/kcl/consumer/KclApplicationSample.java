@@ -3,6 +3,8 @@
  */
 package com.aksh.kcl.consumer;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,9 @@ public class KclApplicationSample {
 	private AWSCredentialsProvider credentialsProvider;
 
 	public static void main(String[] args) {
+		if(Optional.ofNullable(args).map(Arrays::asList).orElse(Collections.emptyList()).contains("--container-run")){
+			System.setProperty("container-run","true");
+		}
 		SpringApplication.run(KclApplicationSample.class, args);
 	}
 
@@ -67,10 +72,11 @@ public class KclApplicationSample {
 
 	@Bean
 	public AWSCredentialsProvider initCredentials() {
-		if (!Optional.ofNullable(System.getProperty("server.host")).isPresent()) {
-			log.info("server.host "+System.getProperty("server.host"));
+		if (Optional.ofNullable(System.getProperty("container-run")).isPresent()) {
+			log.info("A container run container-run "+System.getProperty("container-run"));
 			return new EC2ContainerCredentialsProviderWrapper();
 		} else {
+			log.info("Not a container run: "+System.getProperty("container-run"));
 			// Ensure the JVM will refresh the cached IP values of AWS resources (e.g. //
 			// service endpoints).
 			java.security.Security.setProperty("networkaddress.cache.ttl", "60");

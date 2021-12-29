@@ -1,18 +1,20 @@
-package com.aksh.kinesis.producer;
+package com.aksh.kcl.consumer;
 
-import com.aksh.kafka.avro.fake.TradeData;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.io.*;
+import org.apache.avro.io.BinaryDecoder;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.EncoderFactory;
 import org.apache.avro.specific.SpecificDatumWriter;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Properties;
 
 public class AvroSerDe {
 
