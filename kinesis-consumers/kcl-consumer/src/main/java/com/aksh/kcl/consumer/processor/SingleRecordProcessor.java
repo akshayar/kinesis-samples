@@ -1,17 +1,15 @@
 package com.aksh.kcl.consumer.processor;
 
-import com.aksh.kcl.consumer.AvroSerDe;
+import com.aksh.avro.AvroSerDe;
 import com.amazonaws.services.kinesis.model.Record;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.stereotype.Component;
 
 import java.io.FileInputStream;
-import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Optional;

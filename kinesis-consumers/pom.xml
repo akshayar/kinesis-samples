@@ -48,5 +48,6 @@
         <module>kcl-consumer</module>
         <module>kcl-enhanced-consumer</module>
         <module>kinesis-data-analytics-flink</module>
+        <module>avro-serde</module>
     </modules>
 </project>
