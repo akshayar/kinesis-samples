@@ -4,10 +4,12 @@ import com.aksh.avro.AvroSerDe;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.avro.generic.GenericRecord;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.utils.StringInputStream;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
 import software.amazon.kinesis.lifecycle.events.*;
@@ -16,6 +18,7 @@ import software.amazon.kinesis.retrieval.KinesisClientRecord;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -36,6 +39,10 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 	private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
 
 	AvroSerDe avroSerDe=new AvroSerDe();
+
+	@Value("${glue.schema.enabled:false}")
+	private boolean isGlueSchemaEnabled;
+
 
 	public void initialize(InitializationInput initializationInput) {
 		shardId = initializationInput.shardId();
@@ -77,20 +84,39 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 
 	private void processAvroRecord(KinesisClientRecord record) throws Exception {
 		ByteBuffer data=record.data();
+		byte[] dataBytes;
     	if(record.data().isReadOnly()){
 			ByteBuffer duplicateData = ByteBuffer.allocate(data.capacity());
-			while(data.hasRemaining()){
-				duplicateData.put(data.get());
-			}
-			duplicateData.flip();
-			data=duplicateData;
+			dataBytes = new byte[data.remaining()];
+			data.get(dataBytes, 0, dataBytes.length);
+		}else{
+			dataBytes=record.data().array();
 		}
-		log.info("Data Receieved:" + new String(data.array()));
+		log.info("Data Receieved:" + new String(dataBytes));
 
-		String avroSchema = "src/main/resources/avro/com/aksh/kcl/avro/fake/TradeData.avsc";
-		GenericRecord genericRecord = avroSerDe.deserializeGeneric(new FileInputStream(avroSchema), data);
-		log.info("Data After Parsing :" + genericRecord);
+    	if(isGlueSchemaEnabled){
+			InputStream avroSchemIn=new StringInputStream(record.schema().getSchemaDefinition());
+			GenericRecord genericRecord = avroSerDe.deserializeGeneric(avroSchemIn, dataBytes);
+			log.info("Data After Parsing :" + genericRecord);
+
+		}else{
+			String avroSchema = "src/main/resources/avro/com/aksh/kcl/avro/fake/TradeData.avsc";
+			GenericRecord genericRecord = avroSerDe.deserializeGeneric(new FileInputStream(avroSchema), dataBytes);
+			log.info("Data After Parsing :" + genericRecord);
+		}
+
+
 	}
+
+//	private GenericRecord recordToAvroObj(KinesisClientRecord r) {
+//		byte[] data = new byte[r.data().remaining()];
+//		r.data().get(data, 0, data.length);
+//		org.apache.avro.Schema schema = new org.apache.avro.Schema.Parser().parse(r.schema().getSchemaDefinition());
+//		DatumReader datumReader = new GenericDatumReader<>(schema);
+//
+//		BinaryDecoder binaryDecoder = DecoderFactory.get().binaryDecoder(data, 0, data.length, null);
+//		return (GenericRecord) datumReader.read(null, binaryDecoder);
+//	}
 
 	private void processJsonRecord(KinesisClientRecord record)  {
 		String data = null;

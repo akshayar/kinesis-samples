@@ -38,7 +38,7 @@ public class SingleRecordProcessor {
             //data = decoder.decode(record.getData()).toString();
             log.info("Data Receieved:"+new String(record.getData().array()));
             String avroSchame="src/main/resources/avro/com/aksh/kcl/avro/fake/TradeData.avsc";
-            GenericRecord genericRecord=avroSerDe.deserializeGeneric(new FileInputStream(avroSchame),record.getData());
+            GenericRecord genericRecord=avroSerDe.deserializeGeneric(new FileInputStream(avroSchame),record.getData().array());
             log.info("Data After Parsing :"+genericRecord);
 
 

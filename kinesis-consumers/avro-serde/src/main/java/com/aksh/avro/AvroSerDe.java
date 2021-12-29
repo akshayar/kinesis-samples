@@ -19,23 +19,23 @@ import java.util.Properties;
 public class AvroSerDe {
 
 
-    public ByteBuffer serialize(InputStream schemaIn,Object data) throws IOException{
+    public byte[] serialize(InputStream schemaIn,Object data) throws IOException{
         Schema schema=new Schema.Parser().parse(schemaIn);
         return serialize(schema,data);
     }
 
 
-    public ByteBuffer serialize(Schema schema,Object data) throws IOException {
+    public byte[] serialize(Schema schema,Object data) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.reset();
         BinaryEncoder binaryEncoder = new EncoderFactory().binaryEncoder(byteArrayOutputStream, null);
         new SpecificDatumWriter<>(schema).write(data,binaryEncoder);
         binaryEncoder.flush();
         byte[] bytes = byteArrayOutputStream.toByteArray();
-        return ByteBuffer.wrap(bytes);
+        return bytes;
     }
 
-    public ByteBuffer serializeFromProperties(InputStream schemaIn, Properties dataIn) throws IOException{
+    public byte[] serializeFromProperties(InputStream schemaIn, Properties dataIn) throws IOException{
         Schema schema=new Schema.Parser().parse(schemaIn);
 
         return Optional.ofNullable(dataIn).filter(Objects::nonNull).map(data -> {
@@ -43,7 +43,7 @@ public class AvroSerDe {
             data.entrySet().stream().forEach(entry -> {
                 avroRecord.put(entry.getKey() + "", entry.getValue());
             });
-            ByteBuffer buffer=null;
+            byte[] buffer=null;
             try {
                 buffer=serialize(schema,avroRecord);
             } catch (IOException e) {
@@ -52,24 +52,24 @@ public class AvroSerDe {
             return buffer;
         }).orElse(null);
     }
-    public Properties deserializeToProperties(InputStream schemaIn,ByteBuffer buffer) throws IOException {
+    public Properties deserializeToProperties(InputStream schemaIn,byte[] dataIn) throws IOException {
         Properties prop=new Properties();
-        GenericRecord data=deserializeGeneric(schemaIn,buffer);
+        GenericRecord data=deserializeGeneric(schemaIn,dataIn);
         data.getSchema().getFields().stream().forEach(field -> {
             prop.put(field.name(),data.get(field.name()));
         });
         return prop;
     }
-    public Object deserializeSpecific(InputStream schemaIn,ByteBuffer buffer) throws IOException {
+    public Object deserializeSpecific(InputStream schemaIn,byte[] data) throws IOException {
         Schema schema=new Schema.Parser().parse(schemaIn);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer.array());
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
         BinaryDecoder binaryDecoder = new DecoderFactory().binaryDecoder(byteArrayInputStream,null);
         return new GenericDatumReader<>(schema).read(null,binaryDecoder);
     }
 
-    public GenericRecord deserializeGeneric(InputStream schemaIn,ByteBuffer buffer) throws IOException {
+    public GenericRecord deserializeGeneric(InputStream schemaIn,byte[] data) throws IOException {
         Schema schema=new Schema.Parser().parse(schemaIn);
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(buffer.array());
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
         BinaryDecoder binaryDecoder = new DecoderFactory().binaryDecoder(byteArrayInputStream,null);
         return new GenericDatumReader<GenericRecord>(schema).read(null,binaryDecoder);
     }

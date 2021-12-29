@@ -1,1 +1,2 @@
-aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 799223504601.dkr.ecr.ap-south-1.amazonaws.com
+ACCOUNT_ID=`aws sts get-caller-identity --output text --query Account`
+aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.ap-south-1.amazonaws.com
