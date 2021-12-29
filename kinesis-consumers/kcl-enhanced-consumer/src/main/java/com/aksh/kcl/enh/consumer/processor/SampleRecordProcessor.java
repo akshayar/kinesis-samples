@@ -108,15 +108,7 @@ public class SampleRecordProcessor implements ShardRecordProcessor {
 
 	}
 
-//	private GenericRecord recordToAvroObj(KinesisClientRecord r) {
-//		byte[] data = new byte[r.data().remaining()];
-//		r.data().get(data, 0, data.length);
-//		org.apache.avro.Schema schema = new org.apache.avro.Schema.Parser().parse(r.schema().getSchemaDefinition());
-//		DatumReader datumReader = new GenericDatumReader<>(schema);
-//
-//		BinaryDecoder binaryDecoder = DecoderFactory.get().binaryDecoder(data, 0, data.length, null);
-//		return (GenericRecord) datumReader.read(null, binaryDecoder);
-//	}
+
 
 	private void processJsonRecord(KinesisClientRecord record)  {
 		String data = null;
