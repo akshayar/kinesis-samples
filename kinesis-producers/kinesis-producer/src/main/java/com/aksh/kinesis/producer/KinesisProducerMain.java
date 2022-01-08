@@ -17,7 +17,7 @@ import software.amazon.awssdk.regions.Region;
 @SpringBootApplication
 public class KinesisProducerMain {
 
-	@Value("${region:us-east-1}")
+	@Value("${kinesis.region:us-east-1}")
 	private String regionString;
 
 	public static void main(String[] args) {
@@ -26,13 +26,7 @@ public class KinesisProducerMain {
 
 	@Bean
 	public Region region() {
-//		AWSSimpleSystemsManagementClientBuilder.defaultClient().getParameter(new GetParameterRequest().withName("name"))
-//		.getParameter().getValue();
-//		
-//		AWSSimpleSystemsManagementClientBuilder.defaultClient().putParameter(new PutParameterRequest().withName("").withType(ParameterType.String).withOverwrite(true)))
 		return Region.of(regionString);
-
-		
 	}
 
 	@Bean

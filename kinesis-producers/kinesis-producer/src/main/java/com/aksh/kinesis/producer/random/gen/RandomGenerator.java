@@ -20,7 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
+@Deprecated
 public class RandomGenerator {
 	
 	S3Client s3 = S3Client.builder().build();

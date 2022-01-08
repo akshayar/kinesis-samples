@@ -20,7 +20,7 @@ public class KinesisKPLPublisher {
     @Autowired
     private Region region;
 
-    @Value("${aggregationEnabled:false}")
+    @Value("${KPL.aggregationEnabled:false}")
     private boolean aggregationEnabled;
 
     @Value("${streamName:aksh-first}")
@@ -28,10 +28,10 @@ public class KinesisKPLPublisher {
 
     String partitionPrefix = "partitionPrefix";
 
-    @Value("${glue.schema.enabled:false}")
+    @Value("${AVRO.glue.schema.enabled:false}")
     private boolean isGlueSchemaRegisteryEnabled;
 
-    @Value("${glue.schema.name:demoSchema}")
+    @Value("${AVRO.glue.schema.name:demoSchema}")
     private String glueSchemaName;
 
     public KinesisKPLPublisher() {

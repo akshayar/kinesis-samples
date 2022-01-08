@@ -12,6 +12,12 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
+/**
+ * This class uses Kinesis SDK.
+ * Not using it right now.
+ * This can be integrated with Glue Schema registery , not done at present.
+ * Refer https://docs.aws.amazon.com/glue/latest/dg/schema-registry-integrations.html#schema-registry-integrations-kds
+ */
 public class KinesisSKDPublisher {
 
     @Autowired
