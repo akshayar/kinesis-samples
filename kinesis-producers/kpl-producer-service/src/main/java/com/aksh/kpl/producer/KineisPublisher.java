@@ -27,8 +27,7 @@ class KineisPublisher {
 
 	@Autowired
 	private Region region;
-    @Value("${streamName:aksh-first}")
-    String streamName = "aksh-first";
+
     @Value("${aggregationEnabled:false}")
     private boolean aggregationEnabled;
     @Value("${recordMaxBufferedTimeMs:3000}")
@@ -54,7 +53,7 @@ class KineisPublisher {
 
     }
 
-    public void publishKPL(String payload){
+    public void publishKPL(String payload,String streamName){
         // KinesisProducer gets credentials automatically like
         // DefaultAWSCredentialsProviderChain.
         // It also gets region automatically from the EC2 metadata service.
@@ -71,7 +70,7 @@ class KineisPublisher {
             }
         };
 
-		logger.info("KPL Push: " + payload);
+		logger.info("Stream:{},KPL Push:{} ",streamName, payload);
         ByteBuffer data = ByteBuffer.wrap(payload.getBytes(StandardCharsets.UTF_8));
         String partitionKey=System.currentTimeMillis()+"";
         ListenableFuture<UserRecordResult> f =kinesis.addUserRecord(streamName, partitionKey, data);
