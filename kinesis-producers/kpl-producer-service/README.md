@@ -3,27 +3,28 @@ The objective of this project to showcase writing a HTTP POST web service which 
 This is a sample code and not a production grade code. 
 
 ### Build
-mvn clean install -DskipTests
+`mvn clean install -DskipTests`
+
 
 ### Run From IDE
 
 ### Run From Maven
-mvn spring-boot:run
+`mvn spring-boot:run`
 
 ### Web Services
 1. Heatlh Check
-```html
+```shell
  GET  http://localhost:8080/health-check
 ```
 
 2. Push Data
-```html
+```shell
    POST http://localhost:8080/publish-kpl
    POST data:
    String data
 ```
 
-```json
+```shell
 POST http://localhost:8080/publish-kpl
 POST data:
 {"profit":-16.67, "orderTimestamp":1645877911, "traderName":"cbbb Trader", "orderId":"order7031420007", "currentPosition":1, "buyPrice":79.58, "symbol":"cbbb", "quantity":70.73, "buy":true, "price":49.56, "tradeId":7031420007, "timestamp":1645877911, "portfolioId":"port7031420007", "sellPrice":62.91, "description":"cbbb Description of trade", "customerId":"cust7031420007", "traderFirm":"cbbb Trader Firm"}
