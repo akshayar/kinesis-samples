@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import com.aksh.kinesislambda.dto.TradeInfo;
+import com.amazonaws.services.kinesis.clientlibrary.types.UserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,7 +42,13 @@ public class Handler {
 	public void handle(KinesisEventRecord record) {
 		String payload = new String(record.getKinesis().getData().array());
 		log.info("Payload: " + payload);
-		dao.save(gson.fromJson(payload, Customer.class), tableName);
+		dao.save(gson.fromJson(payload, TradeInfo.class));
+	}
+
+	public void handle(UserRecord record) {
+		String payload = new String(record.getData().array());
+		log.info("Payload: " + payload);
+		dao.save(gson.fromJson(payload, TradeInfo.class));
 	}
 
 }

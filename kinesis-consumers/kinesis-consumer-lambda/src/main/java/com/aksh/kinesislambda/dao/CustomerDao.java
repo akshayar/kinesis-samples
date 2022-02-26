@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 
+import com.aksh.kinesislambda.dto.TradeInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,10 @@ public class CustomerDao {
 		}
 		mapper.save(object, mapperConfig);
 		
+	}
+
+	public void save(TradeInfo object) {
+		System.out.println(object);
 	}
 
 	public Customer get(String id, String table) {

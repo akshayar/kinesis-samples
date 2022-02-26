@@ -21,6 +21,12 @@
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-cognitoidentity:1.11.780" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-kinesis:1.11.780" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-dynamodb:1.11.780" level="project" />
+    <orderEntry type="library" name="Maven: com.amazonaws:amazon-kinesis-deaggregator:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.amazonaws:amazon-kinesis-client:1.8.8" level="project" />
+    <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-cloudwatch:1.11.780" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:18.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:2.6.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-lambda-java-core:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.1.11.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.1.11.RELEASE" level="project" />

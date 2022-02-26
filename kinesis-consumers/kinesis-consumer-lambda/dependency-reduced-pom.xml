@@ -6,7 +6,7 @@
     <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>kinesislambda</artifactId>
+  <artifactId>kinesis-consumer-lambda</artifactId>
   <build>
     <plugins>
       <plugin>

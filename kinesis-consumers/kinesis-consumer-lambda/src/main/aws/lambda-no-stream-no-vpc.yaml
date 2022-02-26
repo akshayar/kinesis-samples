@@ -20,11 +20,10 @@ Parameters:
   zipFileLocation:
     Type: String
     Description: S3 Object Key of lambda code.
-    Default: learning/kinesis/lambda/kinesislambda-1.0.0.jar
+    Default: learning/kinesis/lambda/kinesis-consumer-lambda-1.0.0.jar
   DeployBucket:
     Type: String
     Description: DeployBucket.
-    Default: aksh-test-deploy
   HandlerClass:
     Type: String
     Description: HandlerClass.
@@ -44,13 +43,7 @@ Parameters:
   KinesisStreamName:
     Description: Kinesis Stream Name
     Type: String
-    Default: first-test
-  SecurityGroupIds:
-    Description: SecurityGroupIds
-    Type: List<AWS::EC2::SecurityGroup::Id>
-  SubnetIds:
-    Description: SubnetIds
-    Type: List<AWS::EC2::Subnet::Id>
+
 
 Resources:
   LambdaExecutionRole:
@@ -98,25 +91,6 @@ Resources:
             Principal:
               Service:
                 - lambda.amazonaws.com
-  KinesisStream:
-    Type: AWS::Kinesis::Stream
-    Properties: 
-     Name: !Ref 'KinesisStreamName'
-     RetentionPeriodHours: 24
-     ShardCount: 1
-     Tags: 
-       - 
-         Key: GroupId
-         Value: !Ref 'GroupId'
-       -
-         Key: ApplicationId
-         Value: !Ref 'ApplicationId'
-       -
-         Key: Environment
-         Value: !Ref 'Environment'
-       -
-         Key: AppName
-         Value: !Ref 'AppName'
     
   LambdaFunction:
     Type: AWS::Lambda::Function
@@ -131,9 +105,6 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "java8"
       Timeout: !Ref 'Timeout'
-      VpcConfig:
-        SecurityGroupIds: !Ref 'SecurityGroupIds'
-        SubnetIds: !Ref 'SubnetIds'
       Environment: 
         Variables:
           envPrefix: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}'
@@ -176,7 +147,7 @@ Resources:
     Properties: 
       BatchSize: 100
       Enabled: true
-      EventSourceArn: !GetAtt 'KinesisStream.Arn'
+      EventSourceArn: !Sub 'arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${KinesisStreamName}'
       FunctionName: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}'
       MaximumBatchingWindowInSeconds: 5
       MaximumRecordAgeInSeconds: 1800

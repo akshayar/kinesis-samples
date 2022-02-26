@@ -8,3 +8,4 @@ build
 .aws-sam
 target
 
+.DS_Store
