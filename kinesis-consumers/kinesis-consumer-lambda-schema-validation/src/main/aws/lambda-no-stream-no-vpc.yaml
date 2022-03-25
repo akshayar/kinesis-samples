@@ -1,0 +1,156 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template kinesis stream triggered lambda.
+Parameters:
+  GroupId:
+    Description: Business Unit
+    Type: String
+    Default: learning
+  ApplicationId:
+    Description: Application Id
+    Type: String
+    Default: kinesis
+  Environment:
+    Description: Environment
+    Type: String
+    Default: dev  
+  AppName:
+    Type: String
+    Description: AppName.
+    Default: lambda
+  zipFileLocation:
+    Type: String
+    Description: S3 Object Key of lambda code.
+    Default: learning/kinesis/lambda/kinesis-consumer-lambda-1.0.0.jar
+  DeployBucket:
+    Type: String
+    Description: DeployBucket.
+  HandlerClass:
+    Type: String
+    Description: HandlerClass.
+    Default: com.aksh.kinesislambda.LambdaFunctionHandler
+  MemorySize:
+    Type: Number
+    Description: Memory Size
+    Default: '1024'
+  Timeout:
+    Type: Number
+    Description: Time out
+    Default: '60'
+  Alias:
+    Description: Alias
+    Type: String
+    Default: current
+  KinesisStreamName:
+    Description: Kinesis Stream Name
+    Type: String
+
+
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Description: Defining a execution role for clean up lambda
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      RoleName: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}-lambda-role'
+      Policies:
+        - PolicyName: crds-s3-permission
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 's3:*'
+                Resource: '*'
+        - PolicyName: crds-kinesis
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'kinesis:*'
+                Resource: '*'
+        - PolicyName: crds-ssm
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'ssm:*'
+                Resource: '*'
+        - PolicyName: crds-kinesisfire
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 'firehose:*'
+                Resource: '*'
+                
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+    
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    DependsOn : LambdaExecutionRole
+    Properties:
+      Code:
+        S3Bucket: !Ref 'DeployBucket'
+        S3Key: !Ref 'zipFileLocation'
+      FunctionName: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}'
+      MemorySize: !Ref 'MemorySize'
+      Handler: !Ref 'HandlerClass'
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "java8"
+      Timeout: !Ref 'Timeout'
+      Environment: 
+        Variables:
+          envPrefix: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}'
+          validate: 'Y'
+      Tags: 
+       - 
+         Key: GroupId
+         Value: !Ref 'GroupId'
+       -
+         Key: ApplicationId
+         Value: !Ref 'ApplicationId'
+       -
+         Key: Environment
+         Value: !Ref 'Environment'
+       -
+         Key: AppName
+         Value: !Ref 'AppName'
+  LambdaFunctionVersion: 
+    Type: AWS::Lambda::Version
+    DependsOn : LambdaFunction
+    Properties: 
+      FunctionName: 
+        Ref: "LambdaFunction"
+      Description: "A version"
+  LambdaFunctionAlias: 
+    Type: AWS::Lambda::Alias
+    DependsOn : LambdaFunction
+    Properties: 
+      FunctionName: 
+        Ref: "LambdaFunction"
+      FunctionVersion: 
+        Fn::GetAtt: 
+          - "LambdaFunctionVersion"
+          - "Version"
+      Name:
+        Ref: "Alias"
+  LambdaEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    DependsOn : LambdaFunction
+    Properties: 
+      BatchSize: 100
+      Enabled: true
+      EventSourceArn: !Sub 'arn:aws:kinesis:${AWS::Region}:${AWS::AccountId}:stream/${KinesisStreamName}'
+      FunctionName: !Sub '${GroupId}-${ApplicationId}-${Environment}-${AppName}'
+      MaximumBatchingWindowInSeconds: 5
+      MaximumRecordAgeInSeconds: 1800
+      MaximumRetryAttempts: 5
+      ParallelizationFactor: 10
+      StartingPosition: "TRIM_HORIZON"

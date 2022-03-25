@@ -1,0 +1,65 @@
+[
+  {
+    "ParameterKey": "GroupId",
+    "ParameterValue": "learning"
+  }, 
+  {
+    "ParameterKey": "ApplicationId",
+    "ParameterValue": "kinesis"
+  }, 
+  {
+    "ParameterKey": "Enviroment",
+    "ParameterValue": "dev"
+  }, 
+  {
+    "ParameterKey": "AppName",
+    "ParameterValue": "lambda"
+  }, 
+  {
+    "ParameterKey": "zipFileLocation",
+    "ParameterValue": "learning/kinesis/lambda/kinesislambda-1.0.0.jar"
+  }, 
+  {
+    "ParameterKey": "DeployBucket",
+    "ParameterValue": "aksh-test-deploy"
+  }, 
+  {
+    "ParameterKey": "HandlerClass",
+    "ParameterValue": "com.aksh.kinesislambda.LambdaFunctionHandler"
+  }, 
+  {
+    "ParameterKey": "MemorySize",
+    "ParameterValue": "1024"
+  }, 
+  {
+    "ParameterKey": "Timeout",
+    "ParameterValue": "60"
+  }, 
+  {
+    "ParameterKey": "Alias",
+    "ParameterValue": "current"
+  }, 
+  {
+    "ParameterKey": "KinesisStreamName",
+    "ParameterValue": "aksh-test"
+  }, 
+  {
+    "ParameterKey": "SecurityGroupIds",
+    "ParameterValue": "m1.micro"
+  }, 
+  {
+    "ParameterKey": "SubnetIds",
+    "ParameterValue": "m1.micro"
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
