@@ -12,20 +12,21 @@ var symbol = faker.options().option("AAPL","INFY","AMZN","GOOG","IBM") ;
 var tradeId=faker.numerify('##########') ;
 outValue.put('tradeId',tradeId);
 outValue.put('orderId',"order"+tradeId);
-outValue.put('portfolioId',"port"+tradeId);
 outValue.put('customerId',"cust"+tradeId);
+outValue.put('portfolioId',"port"+tradeId);
+outValue.put( 'buy',faker.bool().bool());
+outValue.put('price',faker.number().randomDouble(2,10,100));
+outValue.put('quantity',faker.number().randomDouble(2,10,100));
 outValue.put('symbol',symbol);
-outValue.put('timestamp', epochSeconds);
-outValue.put( 'orderTimestamp', epochSeconds+'');
 outValue.put('description',symbol+" Description of trade");
 outValue.put('traderName',symbol+" Trader");
 outValue.put('traderFirm',symbol+" Trader Firm");
-outValue.put( 'buy',faker.bool().bool());
-outValue.put( 'currentPosition',faker.number().digits(4));
-outValue.put('quantity',faker.number().randomDouble(2,10,100));
-outValue.put('price',faker.number().randomDouble(2,10,100));
-outValue.put( 'buyPrice',buyPrice) ;
-outValue.put( 'sellPrice',sellPrice);
-outValue.put( 'profit',sellPrice-buyPrice);
+outValue.put( 'orderTimestamp', epochSeconds+'');
+outValue.put('timestamp', epochSeconds);
+
+//outValue.put( 'currentPosition',faker.number().digits(4));
+//outValue.put( 'buyPrice',buyPrice) ;
+//outValue.put( 'sellPrice',sellPrice);
+//outValue.put( 'profit',sellPrice-buyPrice);
 
 
