@@ -5,6 +5,12 @@
 	<groupId>com.aksh</groupId>
 	<version>1.0.0</version>
 	<artifactId>kinesis-producer</artifactId>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.5.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
 	<build>
 		<plugins>
 			<plugin>
@@ -51,6 +57,20 @@
 								<source>src/main/generated-sources</source>
 							</sources>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<mainClass>com.aksh.kinesis.producer.KinesisProducerMain</mainClass>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
